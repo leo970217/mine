@@ -1,0 +1,30 @@
+name: Daily Auto Update
+
+on:
+  schedule:
+    # 这里的 '0 5 * * *' 是一个 CRON 表达式，
+    # 意思是 "在每天的 UTC 时间 5:00 执行"
+    # 你可以根据需要修改这个时间
+    # 例如 '0 22 * * *' 代表 UTC 时间 22:00（北京时间早上 6:00）
+    - cron: '0 5 * * *'
+
+  # 允许你手动在 "Actions" 标签页触发这个工作流
+  workflow_dispatch:
+
+jobs:
+  auto-update:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 检出（Checkout）你的代码库
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. 创建一个空的提交
+      #    使用 --allow-empty 允许创建一个没有文件变动的 "空提交"
+      #    这样做的好处是不会在你的项目中产生无意义的垃圾文件
+      - name: Create empty commit
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit --allow-empty -m "Routine daily update"
+          git push
